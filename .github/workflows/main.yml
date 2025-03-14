@@ -1,0 +1,33 @@
+name: Sync to Azure DevOps
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Git for Azure DevOps
+        run: |
+          git config --global user.email "bjames33@my.centennialcollege.ca"
+          git config --global user.name "Dom1232"
+
+      - name: Convert to full clone
+        run: |
+          git fetch --unshallow
+
+      - name: Add Azure DevOps Remote
+        run: |
+          git remote add azure https://${{ secrets.PAT }}@dev.azure.com/bjames33/DevOps%20Group%20Project/_git/DevOps%20Group%20Project
+
+      - name: Fetch and Sync Changes
+        run: |
+          git fetch origin --tags
+          git pull origin main --rebase
+          git push azure main --force
