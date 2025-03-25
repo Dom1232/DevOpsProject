@@ -51,6 +51,48 @@ const generateToken = (student) => {
     return jwt.sign({ userId: student._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
 
+router.post('/sregister', async (req, res) => {
+    const {
+        number,
+        password,
+        firstName,
+        lastName,
+        address,
+        city,
+        phoneNumber,
+        email,
+        program,
+        favProf,
+        favClass,
+    } = req.body;
+
+    try {
+        const existing = await Student.findOne({ number });
+        if (existing) {
+            return res.status(400).json({ message: 'Student already exists' });
+        }
+
+        const newStudent = new Student({
+            number,
+            password,
+            firstName,
+            lastName,
+            address,
+            city,
+            phoneNumber,
+            email,
+            program,
+            favProf,
+            favClass,
+        });
+
+        await newStudent.save();
+        res.status(201).json({ message: 'Student registered successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 router.post('/slogin', async (req, res) => {
     const { username, password } = req.body;
 

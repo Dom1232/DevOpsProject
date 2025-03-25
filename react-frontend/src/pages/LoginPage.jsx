@@ -78,6 +78,9 @@ function Login() {
                 <button onClick={() => setIsStudent(!isStudent)}>
                     {isStudent ? 'Switch to Admin Login' : 'Switch to Student Login'}
                 </button>
+                <button onClick={() => navigate('/register')}>
+                    Register as Student
+                </button>
             </div>
         </div>
     );

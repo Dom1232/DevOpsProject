@@ -6,6 +6,7 @@ import CreateStudent from './pages/CreateStudent';
 import ListStudents from './pages/ListStudents';
 import ListCourses from './pages/ListCourses';
 import CreateCourse from './pages/CreateCourse';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/create-student" element={<CreateStudent />} />
                 <Route path="/create-course" element={<CreateCourse />} />

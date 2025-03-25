@@ -43,3 +43,30 @@ export const studentLogout = async () => {
         console.error('Error during logout:', error);
     }
 };
+
+// Student Registration
+export const studentRegister = async (studentData) => {
+    try {
+        const response = await fetch('http://localhost:5000/auth/sregister', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(studentData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log('Student registered:', data);
+            return { success: true, message: data.message };
+        } else {
+            return { success: false, message: data.message };
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        return { success: false, message: 'Something went wrong' };
+    }
+};
+
