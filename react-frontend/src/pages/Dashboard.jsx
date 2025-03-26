@@ -143,13 +143,18 @@ function Dashboard () {
 
     const handleLogout = async (userType) => {
         try {
-            if (userType === "admin") {
-                await logoutAdmin();
-            } else if (userType === "student") {
-                await studentLogout();
+            const confirmation = window.confirm("Are you sure you want to logout?");
+            if (confirmation) {
+                if (userType === "admin") {
+                    
+
+                    await logoutAdmin();
+                } else if (userType === "student") {
+                    await studentLogout();
+                }
+                console.log("Logged out successfully");
+                navigate("/");
             }
-            console.log("Logged out successfully");
-            navigate("/");
         } catch (error) {
             console.error("Logout failed:", error);
         }
