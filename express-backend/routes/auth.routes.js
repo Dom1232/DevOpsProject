@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 import Student from '../models/student.js';
 import Admin from '../models/admin.js';
 
@@ -72,9 +73,18 @@ router.post('/sregister', async (req, res) => {
             return res.status(400).json({ message: 'Student already exists' });
         }
 
+        // Validate password strength
+        const passwordRegex = /^(?=.*[!@#$%^&*])(?=.{8,})/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters and include a special character.' });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const newStudent = new Student({
             number,
-            password,
+            password: hashedPassword,
             firstName,
             lastName,
             address,
@@ -101,7 +111,8 @@ router.post('/slogin', async (req, res) => {
     const student = await Student.findOne({ number });
     if (!student) return res.status(400).json({ message: 'Student not found' });
 
-    if (student.password !== password) {
+    const isMatch = await bcrypt.compare(password, student.password);
+    if (!isMatch) {
         return res.status(400).json({ message: 'Invalid credentials' });
     }
 
