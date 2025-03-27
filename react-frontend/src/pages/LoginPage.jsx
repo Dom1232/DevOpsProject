@@ -42,7 +42,7 @@ function Login() {
                 alert("Login successful!");
                 navigate('/Dashboard');
             } else {
-                throw new Error("Invalid credentials");
+                alert("Invalid credentials, Username or Password does not match");
             }
         } catch (error) {
             console.error("Error logging in:", error);
