@@ -1,6 +1,6 @@
-trigger:
-- main
-- devops/*
+trigger: none # until parallelism granted or project switched back to private
+#- main
+#- devops/*
 
 pool:
   vmImage: ubuntu-latest
