@@ -1,28 +1,100 @@
-trigger: 
+trigger:
 - main
-#- devops/*
 
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.x'
-  displayName: 'Install Node.js'
+stages:
+# -------- CI Stage -------- #
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build and Test Job'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '20.x'
+      displayName: 'Install Node.js'
 
-- script: |
-    cd express-backend
-    npm install
-  displayName: 'Install backend dependencies'
+    - script: |
+        cd express-backend
+        npm install
+      displayName: 'Install backend dependencies'
 
-- script: |
-    cd react-frontend
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+    - script: |
+        cd react-frontend
+        npm install
+        npm run build
+      displayName: 'npm install and build'
 
-- script: |
-    cd express-backend
-    npm run test:coverage
-  displayName: 'Run unit tests with coverage'
+    - script: |
+        echo "🔧 SonarQube analysis would run here."
+        echo "Waiting on project setup by Dom1232..."
+      displayName: 'Placeholder: SonarQube Static Code Analysis'
+
+    - script: |
+        cd express-backend
+        npm run test:coverage
+      displayName: 'Run unit tests with coverage'
+
+# -------- Deliver Stage -------- #
+- stage: Deliver
+  displayName: 'Deliver Artifact'
+  dependsOn: Build
+  jobs:
+  - job: PackageJob
+    displayName: 'Simulate Artifact Packaging'
+    steps:
+    - script: |
+        echo "Packaging project artifacts..."
+        mkdir -p output
+        echo "Build output would go here." > output/README.txt
+      displayName: 'Package artifacts'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'output'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+      displayName: 'Publish Artifact'
+
+# -------- Deploy to Dev -------- #
+- stage: DeployToDev
+  displayName: 'Deploy to Dev Env'
+  dependsOn: Deliver
+  jobs:
+  - job: DeployDev
+    steps:
+    - script: echo "Mock deploy to DEV environment complete."
+      displayName: 'Deploying to DEV'
+
+# -------- Deploy to QAT -------- #
+- stage: DeployToQAT
+  displayName: 'Deploy to QAT Env'
+  dependsOn: DeployToDev
+  jobs:
+  - job: DeployQAT
+    steps:
+    - script: echo "Mock deploy to QAT environment complete."
+      displayName: 'Deploying to QAT'
+
+# -------- Deploy to Staging -------- #
+- stage: DeployToStaging
+  displayName: 'Deploy to Staging Env'
+  dependsOn: DeployToQAT
+  jobs:
+  - job: DeployStaging
+    steps:
+    - script: echo "Mock deploy to STAGING environment complete."
+      displayName: 'Deploying to STAGING'
+
+# -------- Deploy to Production -------- #
+- stage: DeployToProduction
+  displayName: 'Deploy to Production Env'
+  dependsOn: DeployToStaging
+  jobs:
+  - job: DeployProd
+    steps:
+    - script: echo "Mock deploy to PRODUCTION environment complete."
+      displayName: 'Deploying to PRODUCTION'
