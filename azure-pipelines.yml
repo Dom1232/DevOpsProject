@@ -21,3 +21,8 @@ steps:
     npm install
     npm run build
   displayName: 'npm install and build'
+
+- script: |
+    cd express-backend
+    npm run test:coverage
+  displayName: 'Run unit tests with coverage'
