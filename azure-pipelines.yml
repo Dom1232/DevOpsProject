@@ -54,7 +54,7 @@ stages:
     - script: |
         mkdir -p build_output
         cp -r express-backend build_output/
-        cp -r react-frontend/build build_output/react-frontend-build
+        cp -r react-frontend/dist build_output/react-frontend-build
       displayName: 'Prepare output for artifact'
 
     - task: PublishBuildArtifacts@1
