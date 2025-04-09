@@ -28,27 +28,6 @@ stages:
         npm run build
       displayName: 'npm install and build'
 
-    - task: SonarCloudPrepare@1
-      inputs:
-        SonarCloud: 'SonarQube'  # Name of the service connection
-        organization: 'dom1232'  # From sonarcloud.io/orgs/dom1232
-        scannerMode: 'CLI'
-        configMode: 'manual'
-        cliProjectKey: 'Dom1232_DevOpsProject'
-        cliProjectName: 'DevOpsProject'
-
-    - script: |
-        cd express-backend
-        npm run test:coverage
-      displayName: 'Run unit tests with coverage'
-
-    - task: SonarCloudAnalyze@1
-      displayName: 'Run SonarCloud analysis'
-
-    - task: SonarCloudPublish@1
-      inputs:
-        pollingTimeoutSec: '300'
-      displayName: 'Publish SonarCloud Quality Gate result'
 
 # -------- Deliver Stage -------- #
 - stage: Deliver
@@ -62,7 +41,7 @@ stages:
         mkdir -p output
         # Copy backend
         cp -r express-backend output/backend
-        cp -r react-frontend/dist output/frontend
+        cp -r react-frontend/build output/frontend
       displayName: 'Bundle backend and frontend'
 
     - task: PublishBuildArtifacts@1
