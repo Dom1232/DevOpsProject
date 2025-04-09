@@ -29,6 +29,41 @@ stages:
       displayName: 'npm install and build'
 
 
+    - task: SonarCloudPrepare@1
+      inputs:
+        SonarCloud: 'SonarQube'  # Name of the service connection
+        organization: 'dom1232'  # From sonarcloud.io/orgs/dom1232
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'Dom1232_DevOpsProject'
+        cliProjectName: 'DevOpsProject'
+
+    - script: |
+        cd express-backend
+        npm run test:coverage
+      displayName: 'Run unit tests with coverage'
+
+    - task: SonarCloudAnalyze@1
+      displayName: 'Run SonarCloud analysis'
+
+    - task: SonarCloudPublish@1
+      inputs:
+        pollingTimeoutSec: '300'
+      displayName: 'Publish SonarCloud Quality Gate result'
+      
+    - script: |
+        mkdir -p build_output
+        cp -r express-backend build_output/
+        cp -r react-frontend/build build_output/react-frontend-build
+      displayName: 'Prepare output for artifact'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'build_output'
+        ArtifactName: 'webApp'
+        publishLocation: 'Container'
+      displayName: 'Publish build artifact'
+
 # -------- Deliver Stage -------- #
 - stage: Deliver
   displayName: 'Deliver Artifact'
@@ -37,11 +72,16 @@ stages:
   - job: PackageJob
     displayName: 'Artifact Packaging'
     steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: 'webApp'
+        downloadPath: '$(Pipeline.Workspace)'
+      displayName: 'Download Build Artifact'
+
     - script: |
         mkdir -p output
-        # Copy backend
-        cp -r express-backend output/backend
-        cp -r react-frontend/build output/frontend
+        cp -r $(Pipeline.Workspace)/webApp/express-backend output/backend
+        cp -r $(Pipeline.Workspace)/webApp/react-frontend-build output/frontend
       displayName: 'Bundle backend and frontend'
 
     - task: PublishBuildArtifacts@1
@@ -49,8 +89,7 @@ stages:
         PathtoPublish: 'output'
         ArtifactName: 'drop'
         publishLocation: 'Container'
-      displayName: 'Publish Artifact'
-
+      displayName: 'Publish final artifact'
 # -------- Deploy to Dev -------- #
 - stage: DeployToDev
   displayName: 'Deploy to Dev Env'
