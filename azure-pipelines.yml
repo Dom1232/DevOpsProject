@@ -56,13 +56,14 @@ stages:
   dependsOn: Build
   jobs:
   - job: PackageJob
-    displayName: 'Simulate Artifact Packaging'
+    displayName: 'Artifact Packaging'
     steps:
     - script: |
-        echo "Packaging project artifacts..."
         mkdir -p output
-        echo "Build output would go here." > output/README.txt
-      displayName: 'Package artifacts'
+        # Copy backend
+        cp -r express-backend output/backend
+        cp -r react-frontend/dist output/frontend
+      displayName: 'Bundle backend and frontend'
 
     - task: PublishBuildArtifacts@1
       inputs:
