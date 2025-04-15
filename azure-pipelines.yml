@@ -55,8 +55,14 @@ stages:
         mkdir -p build_output
         cp -r express-backend build_output/
         cp -r react-frontend/dist build_output/react-frontend-build
-      displayName: 'Prepare output for deliver stage'
+      displayName: 'Prepare output for artifact'
 
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'build_output'
+        ArtifactName: 'webApp'
+        publishLocation: 'Container'
+      displayName: 'Publish build artifact'
 
 # -------- Deliver Stage -------- #
 - stage: Deliver
@@ -68,7 +74,7 @@ stages:
     steps:
     - task: DownloadBuildArtifacts@0
       inputs:
-        artifactName: 'BuildJob'
+        artifactName: 'webApp'
         downloadPath: '$(Pipeline.Workspace)'
       displayName: 'Download Build Output'
 
