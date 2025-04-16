@@ -22,11 +22,20 @@ stages:
         npm install
       displayName: 'Install backend dependencies'
 
-    - script: |
-        cd react-frontend
-        npm install
-        npm run build
-      displayName: 'npm install and build'
+    - task: Npm@1
+      displayName: 'Installing dependencies'
+      inputs:
+        workingDir: 'react-frontend'
+        command: 'install'
+        verbose: false
+
+    - task: Npm@1
+      displayName: 'Building the project'
+      inputs:
+        workingDir: 'react-frontend'
+        command: 'custom'
+        customCommand: 'run build'
+        verbose: false
 
 
     - task: SonarCloudPrepare@1
