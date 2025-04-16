@@ -18,12 +18,12 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
-        cd backend
+        cd express-backend
         npm install
       displayName: 'Install backend dependencies'
 
     - script: |
-        cd frontend
+        cd react-frontend
         npm install
         npm run build
       displayName: 'npm install and build'
@@ -54,8 +54,8 @@ stages:
     - script: |
         mkdir -p deliver/backend
         mkdir -p deliver/frontend
-        cp -r backend/* deliver/backend/
-        cp -r frontend/dist deliver/frontend/
+        cp -r express-backend/* deliver/backend/
+        cp -r react-frontend/dist deliver/frontend/
       displayName: 'Prepare artifact folder'
 
 # -------- Deliver Stage -------- #
