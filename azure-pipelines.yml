@@ -18,12 +18,12 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
-        cd express-backend
+        cd backend
         npm install
       displayName: 'Install backend dependencies'
 
     - script: |
-        cd react-frontend
+        cd frontend
         npm install
         npm run build
       displayName: 'npm install and build'
