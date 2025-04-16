@@ -52,10 +52,9 @@ stages:
       displayName: 'Publish SonarCloud Quality Gate result'
       
     - script: |
-        mkdir -p deliver/backend
-        mkdir -p deliver/frontend
-        cp -r express-backend/* deliver/backend/
-        cp -r react-frontend/dist deliver/frontend/
+        mkdir -p $(Pipeline.Workspace)/deliver
+        cp -r express-backend/* $(Pipeline.Workspace)/deliver/backend/
+        cp -r react-frontend/dist $(Pipeline.Workspace)/deliver/frontend/
       displayName: 'Prepare artifact folder'
 
 # -------- Deliver Stage -------- #
@@ -68,12 +67,9 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - download: current
-      artifact: drop
-
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: 'deliver'
+        PathtoPublish: '$(Pipeline.Workspace)/deliver'
         ArtifactName: 'drop'
         publishLocation: 'Container'
       displayName: 'Publish deliverable artifact''
