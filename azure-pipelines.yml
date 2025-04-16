@@ -66,8 +66,16 @@ stages:
         Copy-Item -Path "express-backend\*" -Destination "$(Build.ArtifactStagingDirectory)\deliver\backend" -Recurse
         Copy-Item -Path "react-frontend\dist\*" -Destination "$(Build.ArtifactStagingDirectory)\deliver\frontend" -Recurse
       displayName: 'Prepare artifact folder'
+      
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/deliver'
+        ArtifactName: 'deliver'
+        publishLocation: 'Container'
+      displayName: 'Publish build output'
 
 # -------- Deliver Stage -------- #
+
 - stage: Deliver
   displayName: 'Deliver Artifact'
   dependsOn: Build
@@ -75,13 +83,19 @@ stages:
   - job: PackageJob
     displayName: 'Artifact Packaging'
     steps:
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: 'deliver'
+        downloadPath: '$(Pipeline.Workspace)'
+      displayName: 'Download build artifact'
+
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)\deliver'
         ArtifactName: 'drop'
         publishLocation: 'Container'
-      displayName: 'Publish deliverable artifact''
-      '
+      displayName: 'Publish deliverable artifact'
 # -------- Deploy to Dev -------- #
 - stage: DeployToDev
   displayName: 'Deploy to Dev Env'
