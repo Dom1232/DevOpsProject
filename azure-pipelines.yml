@@ -51,10 +51,11 @@ stages:
         pollingTimeoutSec: '300'
       displayName: 'Publish SonarCloud Quality Gate result'
       
-    - script: |
-        mkdir -p $(Build.ArtifactStagingDirectory)/deliver
-        cp -r express-backend/* $(Build.ArtifactStagingDirectory)/deliver/backend/
-        cp -r react-frontend/dist $(Build.ArtifactStagingDirectory)/deliver/frontend/
+    - powershell: |
+        New-Item -ItemType Directory -Path "$(Build.ArtifactStagingDirectory)\deliver\backend" -Force
+        New-Item -ItemType Directory -Path "$(Build.ArtifactStagingDirectory)\deliver\frontend" -Force
+        Copy-Item -Path "express-backend\*" -Destination "$(Build.ArtifactStagingDirectory)\deliver\backend" -Recurse
+        Copy-Item -Path "react-frontend\dist\*" -Destination "$(Build.ArtifactStagingDirectory)\deliver\frontend" -Recurse
       displayName: 'Prepare artifact folder'
 
 # -------- Deliver Stage -------- #
@@ -67,7 +68,7 @@ stages:
     steps:
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/deliver'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)\deliver'
         ArtifactName: 'drop'
         publishLocation: 'Container'
       displayName: 'Publish deliverable artifact''
